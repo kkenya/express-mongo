@@ -25,6 +25,6 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use('/', indexRouter)
 app.use('/users', usersRouter)
 
-require('./shared/models/mongo/users')
+require('./shared/models/mongo')
 
 module.exports = app
