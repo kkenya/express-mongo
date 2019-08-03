@@ -11,7 +11,6 @@ RUN chown -R node:node ${APP_DIR}
 
 USER node
 
-# COPY package*.json .
 COPY . .
 
 RUN npm install
