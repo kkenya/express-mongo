@@ -9,7 +9,7 @@ const usersRouter = require('./routes/users')
 
 const app = express()
 
-mongoose.connect('mongodb://localhost/expressMongo', { useNewUrlParser: true })
+mongoose.connect('mongodb://mongo/expressMongo', { useNewUrlParser: true })
 const db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', function () {
