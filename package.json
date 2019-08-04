@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "docker-compose run -d web npx nodemon ./bin/www",
     "build": "docker-compose build",
     "up": "docker-compose up -d",
+    "dev": "npm run up && docker-compose run -d web npx nodemon ./bin/www",
     "down": "docker-compose down",
     "logs-web": "docker-compose logs -f web"
   },
