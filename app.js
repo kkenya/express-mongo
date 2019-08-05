@@ -5,14 +5,15 @@ const logger = require('morgan')
 const mongoose = require('mongoose')
 
 const indexRouter = require('./routes/index')
-const usersRouter = require('./routes/users')
+const usersRouter = require('./routes/api/users')
 
 const app = express()
 
 mongoose.connect('mongodb://mongo/expressMongo', { useNewUrlParser: true })
+  .catch(e => console.error(e))
+mongoose.connection.on('error', e => console.error(e))
 const db = mongoose.connection
-db.on('error', console.error.bind(console, 'connection error:'))
-db.once('open', function () {
+db.once('open', () => {
   console.log('connected.')
 })
 
@@ -23,7 +24,7 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/', indexRouter)
-app.use('/users', usersRouter)
+// app.use('/users', usersRouter)
 
 require('./shared/models/mongo')
 
