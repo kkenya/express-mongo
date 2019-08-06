@@ -4,7 +4,7 @@ services:
     build: .
     environment:
       NODE_ENV: development
-    command: bash -c "npx nodemon bin/www"
+    command: bash -c "npx nodemon app.js"
     volumes:
       - .:/home/node/express-mongo
     ports:
