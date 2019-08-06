@@ -3,19 +3,26 @@ const cookieParser = require('cookie-parser')
 const logger = require('morgan')
 const mongoose = require('mongoose')
 
+require('./shared/models')
+
 const indexRouter = require('./routes/index')
 
 const app = express()
 
-mongoose.connect('mongodb://mongo/expressMongo', { useNewUrlParser: true })
+mongoose.connect('mongodb://mongo', {
+  useNewUrlParser: true,
+  dbName: 'expressMongo',
+  user: 'root',
+  pass: 'password'
+})
   .catch(e => console.error(e))
+
 mongoose.connection.on('error', e => console.error(e))
+
 const db = mongoose.connection
 db.once('open', () => {
   console.log('connected.')
 })
-
-require('./shared/models/mongo/users')
 
 app.use(logger('dev'))
 app.use(express.json())
