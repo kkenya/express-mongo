@@ -1,9 +1,9 @@
-var express = require('express')
-var router = express.Router()
+const router = require('express').Router()
+const mongoose = require('mongoose')
+const User = mongoose.model('User')
 
 router.get('/', async (req, res, next) => {
-  console.log(req)
-  const users = await Users.find()
+  const users = await User.find()
   res.send(users)
 })
 
@@ -12,7 +12,7 @@ router.post('/user', async (req, res, next) => {
     return res.status(422).json({ error: 'invalid' })
   }
   const { name, email } = req.body.user
-  // Users.create({ name, email })
+  User.create({ name, email })
   res.send('respond with a resource')
 })
 

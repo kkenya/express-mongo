@@ -1,8 +1,8 @@
-var router = require('express').Router()
+const router = require('express').Router()
 
 router.use('/api', require('./api'))
-// router.get('/', function (req, res, next) {
-//   res.render('index', { title: 'Express' })
-// })
+router.get('/', (req, res, next) => {
+  res.json({ message: 'Hello Express' })
+})
 
 module.exports = router
