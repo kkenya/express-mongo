@@ -17,7 +17,7 @@ router.post('/', async (req, res, next) => {
 })
 
 router.put('/user', async (req, res, next) => {
-  const user = await User.find(req.body.id)
+//   const user = await User.find(req.body.id)
 
 })
 module.exports = router

@@ -4,7 +4,7 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-ENV APP_DIR=/home/node/express-mongo
+ENV APP_DIR=/express-mongo
 
 WORKDIR ${APP_DIR}
 RUN chown -R node:node ${APP_DIR}
