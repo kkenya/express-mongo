@@ -4,8 +4,11 @@ services:
     build: .
     environment:
       NODE_ENV: development
+    command: bash -c "npx nodemon src/app.js"
+    volumes:
+      - .:/express-mongo
     ports:
-    - "3000:3000"
+      - "3000:3000"
     depends_on:
       - mongo
   mongo:

@@ -6,13 +6,13 @@
     "start": "node ./bin/www",
     "build": "docker-compose build",
     "up": "docker-compose up -d",
-    "dev": "npm run up && docker-compose run -d web npx nodemon ./bin/www",
     "down": "docker-compose down",
     "logs-web": "docker-compose logs -f web"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
+    "dotenv": "^8.0.0",
     "express": "~4.16.1",
     "mongoose": "^5.6.7",
     "morgan": "~1.9.1"
