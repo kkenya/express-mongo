@@ -3,16 +3,14 @@ const mongoose = require('mongoose')
 const User = mongoose.model('User')
 
 router.get('/', async (req, res, next) => {
-  const users = await User.find()
+  const users = await User.find().exec()
   res.send(users)
 })
 
 router.get('/:id', async (req, res, next) => {
-  const { id } = req.params
+  const user = await User.findById(req.params.id).exec()
 
-  const users = await User.findById(id)
-
-  res.send(users)
+  res.send(user)
 })
 
 router.post('/', async (req, res, next) => {
@@ -21,16 +19,19 @@ router.post('/', async (req, res, next) => {
   }
   const { name, email } = req.body.user
   User.create({ name, email })
-
-  res.send('respond with a resource')
+  res.send('user created')
 })
 
 router.put('/:id', async (req, res, next) => {
-  const { id } = req.params
   const { name, email } = req.body.user
 
-  User.findByIdAndUpdate(id, { name, email })
-  res.send(`user: ${id} is updated`)
+  const user = await User.update({
+    id: req.params.id,
+    name,
+    email
+  })
+
+  res.send(user)
 })
 
 router.delete('/:id', async (req, res, next) => {
@@ -38,6 +39,7 @@ router.delete('/:id', async (req, res, next) => {
 
   User.findByIdAndDelete(id)
 
-  res.send(`user: ${id} is deleted`)
+  res.send(`user ${req.body.user.id} deleted`)
 })
+
 module.exports = router
