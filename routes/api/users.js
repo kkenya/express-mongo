@@ -4,13 +4,13 @@ const User = mongoose.model('User')
 
 router.get('/', async (req, res, next) => {
   const users = await User.find().exec()
-  res.send(users)
+  res.json(users)
 })
 
 router.get('/:id', async (req, res, next) => {
   const user = await User.findById(req.params.id).exec()
 
-  res.send(user)
+  res.json(user)
 })
 
 router.post('/', async (req, res, next) => {
@@ -19,7 +19,7 @@ router.post('/', async (req, res, next) => {
   }
   const { name, email } = req.body.user
   User.create({ name, email })
-  res.send('user created')
+  res.json('user created')
 })
 
 router.put('/:id', async (req, res, next) => {
@@ -31,7 +31,7 @@ router.put('/:id', async (req, res, next) => {
     email
   })
 
-  res.send(user)
+  res.json(user)
 })
 
 router.delete('/:id', async (req, res, next) => {
@@ -39,7 +39,7 @@ router.delete('/:id', async (req, res, next) => {
 
   User.findByIdAndDelete(id)
 
-  res.send(`user ${req.body.user.id} deleted`)
+  res.json(`user ${req.body.user.id} deleted`)
 })
 
 module.exports = router
