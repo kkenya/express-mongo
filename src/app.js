@@ -25,12 +25,6 @@ const mongoose = require('mongoose')
 // app.set('port', port)
 
 // /**
-//  * Create HTTP server.
-//  */
-
-// var server = http.createServer(app)
-
-// /**
 //  * Listen on provided port, on all network interfaces.
 //  */
 
@@ -98,29 +92,22 @@ const mongoose = require('mongoose')
 //   debug('Listening on ' + bind)
 // }
 //
-//
-//
-//
-//
-//
-//
 async function createServer () {
+  require('./shared/models')
+
   // See https://github.com/exegesis-js/exegesis/blob/master/docs/Options.md
   const options = {
-    controllers: path.resolve(__dirname, './controllers'),
+    controllers: path.resolve(__dirname, './api/routes'),
     allowMissingControllers: false
   }
 
   // This creates an exegesis middleware, which can be used with express,
   // connect, or even just by itself.
   const exegesisMiddleware = await exegesisExpress.middleware(
-    path.resolve(__dirname, './api/oas.yaml'),
+    path.resolve(__dirname, './api/openapi.yaml'),
     options
   )
 
-  require('./shared/models')
-
-  const indexRouter = require('./routes/index')
   const app = express()
 
   mongoose.connect('mongodb://mongo', {
@@ -140,7 +127,6 @@ async function createServer () {
 
   // If you have any body parsers, this should go before them.
   app.use(exegesisMiddleware)
-  app.use('/', indexRouter)
 
   // Return a 404
   app.use((req, res) => {
@@ -149,7 +135,7 @@ async function createServer () {
 
   // Handle any unexpected errors
   app.use((err, req, res, next) => {
-    res.status(500).json({ message: `Internal error: ${err.message}` })
+    res.status(500).json({ message: `Internal server error: ${err.message}` })
   })
 
   const server = http.createServer(app)
