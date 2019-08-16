@@ -3,12 +3,20 @@ info:
   title: Swagger mongo
   version: 1.0.0
 
+servers:
+- url: /api/v1
+
+tags:
+- name: users
+  description: User API
+
 paths:
-  '/greet':
+  '/greets':
+    x-exegesis-controller: greets
     get:
+      x-exegesis-operationId: 'greets#get'
       summary: Greets the user
-      operationId: getGreeting
-      x-exegesis-controller: greetController
+      description: Greets the user
       parameters:
         - description: The name of the user to greet.
           name: name
@@ -16,6 +24,37 @@ paths:
           required: true
           schema:
             type: string
+      responses:
+        200:
+          description: A greeting for the user.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+  '/users':
+    get:
+      x-exegesis-controller: users
+      x-exegesis-operationId: 'users#list'
+      tags:
+      - users
+      summary: users list
+      description: ユーザー一覧
       responses:
         200:
           description: A greeting for the user.

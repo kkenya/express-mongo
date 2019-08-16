@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
 
-// router.get('/', async (req, res, next) => {
 const list = async (req, res, next) => {
   const users = await User.find().exec()
   res.send(users)
