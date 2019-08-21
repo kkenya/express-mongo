@@ -1,120 +1,155 @@
 const express = require('express')
-const cookieParser = require('cookie-parser')
-const logger = require('morgan')
+const exegesisExpress = require('exegesis-express')
+const http = require('http')
+const path = require('path')
 const mongoose = require('mongoose')
+// const cookieParser = require('cookie-parser')
+// const logger = require('morgan')
 
-require('./shared/models')
+// app.use(logger('dev'))
+// app.use(express.json())
+// app.use(express.urlencoded({ extended: false }))
+// app.use(cookieParser())
 
-const indexRouter = require('./routes/index')
+// /**
+//  * Module dependencies.
+//  */
 
-const app = express()
+// var debug = require('debug')('express-mongo:server')
 
-mongoose.connect('mongodb://mongo', {
-  useNewUrlParser: true,
-  dbName: 'expressMongo',
-  user: 'root',
-  pass: 'password'
-})
-  .catch(e => console.error(e))
+// /**
+//  * Get port from environment and store in Express.
+//  */
 
-mongoose.connection.on('error', e => console.error(e))
+// var port = normalizePort(process.env.PORT || '3000')
+// app.set('port', port)
 
-const db = mongoose.connection
-db.once('open', () => {
-  console.log('connected.')
-})
+// /**
+//  * Listen on provided port, on all network interfaces.
+//  */
 
-app.use(logger('dev'))
-app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
-app.use(cookieParser())
+// server.listen(port)
+// server.on('error', onError)
+// server.on('listening', onListening)
 
-app.use('/', indexRouter)
+// /**
+//  * Normalize a port into a number, string, or false.
+//  */
 
-/**
- * Module dependencies.
- */
+// function normalizePort(val) {
+//   var port = parseInt(val, 10)
 
-var debug = require('debug')('express-mongo:server')
-var http = require('http')
+//   if (isNaN(port)) {
+//     // named pipe
+//     return val
+//   }
 
-/**
- * Get port from environment and store in Express.
- */
+//   if (port >= 0) {
+//     // port number
+//     return port
+//   }
 
-var port = normalizePort(process.env.PORT || '3000')
-app.set('port', port)
+//   return false
+// }
 
-/**
- * Create HTTP server.
- */
+// /**
+//  * Event listener for HTTP server "error" event.
+//  */
 
-var server = http.createServer(app)
+// function onError(error) {
+//   if (error.syscall !== 'listen') {
+//     throw error
+//   }
 
-/**
- * Listen on provided port, on all network interfaces.
- */
+//   var bind = typeof port === 'string'
+//     ? 'Pipe ' + port
+//     : 'Port ' + port
 
-server.listen(port)
-server.on('error', onError)
-server.on('listening', onListening)
+//   // handle specific listen errors with friendly messages
+//   switch (error.code) {
+//     case 'EACCES':
+//       console.error(bind + ' requires elevated privileges')
+//       process.exit(1)
+//       break
+//     case 'EADDRINUSE':
+//       console.error(bind + ' is already in use')
+//       process.exit(1)
+//       break
+//     default:
+//       throw error
+//   }
+// }
 
-/**
- * Normalize a port into a number, string, or false.
- */
+// /**
+//  * Event listener for HTTP server "listening" event.
+//  */
 
-function normalizePort (val) {
-  var port = parseInt(val, 10)
+// function onListening() {
+//   var addr = server.address()
+//   var bind = typeof addr === 'string'
+//     ? 'pipe ' + addr
+//     : 'port ' + addr.port
+//   debug('Listening on ' + bind)
+// }
+//
+async function createServer () {
+  require('./shared/models')
 
-  if (isNaN(port)) {
-    // named pipe
-    return val
+  // See https://github.com/exegesis-js/exegesis/blob/master/docs/Options.md
+  const options = {
+    controllers: path.resolve(__dirname, './api/routes'),
+    allowMissingControllers: false
   }
 
-  if (port >= 0) {
-    // port number
-    return port
-  }
+  // This creates an exegesis middleware, which can be used with express,
+  // connect, or even just by itself.
+  const exegesisMiddleware = await exegesisExpress.middleware(
+    path.resolve(__dirname, './api/openapi.yaml'),
+    options
+  )
 
-  return false
+  const app = express()
+
+  mongoose.connect('mongodb://mongo', {
+    useNewUrlParser: true,
+    dbName: 'expressMongo',
+    user: 'root',
+    pass: 'password'
+  })
+    .catch(e => console.error(e))
+
+  mongoose.connection.on('error', e => console.error(e))
+
+  const db = mongoose.connection
+  db.once('open', () => {
+    console.log('connected.')
+  })
+
+  // If you have any body parsers, this should go before them.
+  app.use(exegesisMiddleware)
+
+  // Return a 404
+  app.use((req, res) => {
+    res.status(404).json({ message: `Not found` })
+  })
+
+  // Handle any unexpected errors
+  app.use((err, req, res, next) => {
+    res.status(500).json({ message: `Internal server error: ${err.message}` })
+  })
+
+  const server = http.createServer(app)
+
+  return server
 }
 
-/**
- * Event listener for HTTP server "error" event.
- */
-
-function onError (error) {
-  if (error.syscall !== 'listen') {
-    throw error
-  }
-
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port
-
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges')
-      process.exit(1)
-      break
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use')
-      process.exit(1)
-      break
-    default:
-      throw error
-  }
-}
-
-/**
- * Event listener for HTTP server "listening" event.
- */
-
-function onListening () {
-  var addr = server.address()
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port
-  debug('Listening on ' + bind)
-}
+createServer()
+  .then(server => {
+    server.listen(3000)
+    console.log('Listening on port 3000')
+    console.log('Try visiting http://localhost:3000/greet?name=Jason')
+  })
+  .catch(err => {
+    console.error(err.stack)
+    process.exit(1)
+  })
