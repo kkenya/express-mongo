@@ -15,7 +15,7 @@
     "dotenv": "^8.0.0",
     "exegesis-express": "^2.0.0",
     "express": "~4.16.1",
-    "mongoose": "^5.6.7",
+    "mongoose": "^5.7.5",
     "morgan": "~1.9.1",
     "prettier": "^1.18.2"
   },
